@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Flower Shop</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f8f8f8;
+        }
+
+        h1 {
+            color: #b5651d;
+        }
+
+        .product {
+            background: #fff;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        input,
+        button {
+            margin: 5px;
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🌸 Flower Shop</h1>
+
+    <h2>Danh sách sản phẩm</h2>
+    <div id="product-list"></div>
+
+    <h2>Thêm sản phẩm mới</h2>
+    <form id="product-form">
+        <input type="text" id="name" placeholder="Tên hoa" required>
+        <input type="number" id="price" placeholder="Giá" required>
+        <input type="text" id="description" placeholder="Mô tả" required>
+        <button type="submit">Thêm</button>
+    </form>
+
+    <script>
+        async function loadProducts() {
+            const res = await fetch("/products");
+            const products = await res.json();
+            const list = document.getElementById("product-list");
+            list.innerHTML = "";
+            products.forEach(p => {
+                list.innerHTML += `<div class="product">
+          <b>${p.name}</b> - ${p.price} VNĐ <br> ${p.description}
+        </div>`;
+            });
+        }
+
+        document.getElementById("product-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const name = document.getElementById("name").value;
+            const price = document.getElementById("price").value;
+            const description = document.getElementById("description").value;
+
+            await fetch("/products", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, price, description })
+            });
+
+            e.target.reset();
+            loadProducts();
+        });
+
+        loadProducts();
+    </script>
+</body>
+
+</html>
